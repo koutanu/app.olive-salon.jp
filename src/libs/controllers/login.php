@@ -2,67 +2,114 @@
 
 class Login extends Controller
 {
+	private $class_name = 'login';
+	private $alert;
 
-    private $class_name = 'login';
-    private $alert;
+	function __construct()
+	{
+		parent::__construct();
+	}
 
-    function __construct()
-    {
-        parent::__construct();
-    }
+	function index()
+	{
+		$data = [
+			'js' => [$this->class_name . '/index.js'],
+			'alert' => $this->alert
+		];
+		$this->view->render($this->class_name, 'index', '', $data);
+	}
 
-    function index()
-    {
-        $this->view->alert = $this->alert;
-        $this->view->js = array($this->class_name . '/index.js');
-        $this->view->render($this->class_name, 'index', 'ログイン画面');
-    }
+	// function account()
+	// {
+	// 	$data = [
+	// 		'js' => [$this->class_name . '/index.js']
+	// 	];
+	// 	$this->view->render($this->class_name, 'account', 'アカウント新規追加', $data);
+	// }
 
-    function account()
-    {
-        $this->view->alert = $this->alert;
-        $this->view->js = array($this->class_name . '/index.js');
-        $this->view->render($this->class_name, 'account', 'アカウント新規追加');
-    }
+	/**
+	 * ログイン実行
+	 */
+	function zikkou()
+	{
+		// --- 追加：IPアドレスを取得 ---
+		$remote_ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
-    function run()
-    {
-        $login_account = filter_input(INPUT_POST, 'login_account');
-        $user_info = $this->model->auth($login_account);
-        if ($user_info !== false) {
-            Session::init();
-            Session::set('user_info', $user_info);
-            Session::set('login_state', true);
-            Session::set('last_request_time', time());
-            $message = 'ログイン成功';
-            $this->tasklog->record(0, $message, $this->class_name, __FUNCTION__);
-            header('location: ' . URL . 'home');
-        } else {
-            $message = 'ログインエラー';
-            $this->tasklog->record(1, $message, $this->class_name, __FUNCTION__);
-            header('location: ' . URL . 'login/error');
-        }
-    }
+		// ハニーポットのチェック
+		$hp_email = filter_input(INPUT_POST, 'hp_email');
 
-    // function createUser()
-    // {
-    //     $account = filter_input(INPUT_POST, 'account');
-    //     $password = filter_input(INPUT_POST, 'password');
-    //     $name = filter_input(INPUT_POST, 'name');
-    //     if ($this->model->createUser($account, $name, $password) >= 0) {
-    //         return true;
-    //     };
-    // }
+		if ($hp_email !== '' && $hp_email !== null) {
+			// IPアドレスをログに含める
+			$message = "不正アクセス検知(Honeypot) / IP: {$remote_ip} / Data: {$hp_email}";
+			$this->tasklog->record(2, $message, $this->class_name, __FUNCTION__);
 
-    function error()
-    {
-        $this->view->alert = 'ログインできませんでした。';
-        $this->view->js = array($this->class_name . '/index.js');
-        $this->view->render($this->class_name, 'index', 'Login');
-    }
+			header('location: ' . URL . 'login/error');
+			exit;
+		}
 
-    function timeout()
-    {
-        header('location: ' . URL . 'login');
-    }
+		$login_account = filter_input(INPUT_POST, 'login_account');
+		$password = filter_input(INPUT_POST, 'password');
+
+		$user_info = $this->model->auth($login_account, $password);
+
+		if ($user_info !== false) {
+			Session::init();
+			session_regenerate_id(true);
+			Session::set('user_info', $user_info);
+			Session::set('login_state', true);
+			Session::set('last_request_time', time());
+
+			header('location: ' . URL . 'home');
+			exit;
+		} else {
+			// --- 修正：ログインエラー時にもIPアドレスを記録 ---
+			$message = "ログインエラー / アカウント: {$login_account} / IP: {$remote_ip}";
+			// セキュリティ上、パスワードをそのままログに残すのは避けたほうが良いため除外を推奨します
+
+			$this->tasklog->record(1, $message, $this->class_name, __FUNCTION__);
+			header('location: ' . URL . 'login/error');
+			exit;
+		}
+	}
+
+	/**
+	 * ユーザー作成実行
+	 */
+	// function createUser()
+	// {
+	// 	$account  = filter_input(INPUT_POST, 'account');
+	// 	$password = filter_input(INPUT_POST, 'password');
+	// 	$name     = filter_input(INPUT_POST, 'name');
+
+	// 	// バリデーション（簡易例：空チェック）
+	// 	if (!$account || !$password || !$name) {
+	// 		$this->alert = '全項目入力してください。';
+	// 		$this->account();
+	// 		return;
+	// 	}
+
+	// 	if ($this->model->createUser($account, $name, $password) >= 0) {
+	// 		// 登録成功時はログイン画面へ戻すなどの処理が必要
+	// 		header('location: ' . URL . 'login');
+	// 		exit;
+	// 	} else {
+	// 		$this->alert = '登録に失敗しました。';
+	// 		$this->account();
+	// 	}
+	// }
+
+	function error()
+	{
+		$data = [
+			'js' => [$this->class_name . '/index.js'],
+			'alert' => 'ログインできませんでした。'
+		];
+		$this->view->render($this->class_name, 'index', 'Login', $data);
+	}
+
+	function timeout()
+	{
+		header('location: ' . URL . 'login');
+		exit;
+	}
 }

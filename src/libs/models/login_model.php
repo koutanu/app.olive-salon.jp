@@ -3,53 +3,55 @@
 class Login_Model extends Model
 {
 
-    public function __construct()
-    {
-        parent::__construct();
-    }
+	public function __construct()
+	{
+		parent::__construct();
+	}
 
-    public function auth($account)
-    {
-        $sql = "SELECT * FROM m_users WHERE account = :account;";
-        $sth = $this->db->prepare($sql);
-        $bind = array('account' => $account);
-        foreach ($bind as $key => $value) {
-            if (gettype($value) == 'string') {
-                $sth->bindValue(":$key", $value, PDO::PARAM_STR);
-            } else {
-                $sth->bindValue(":$key", (int) $value, PDO::PARAM_INT);
-            }
-        }
-        $sth->execute();
+	public function auth($account, $password)
+	{
+		// ユーザー情報の取得
+		$sql = "SELECT id, account, password, name, auth FROM m_users WHERE account = :account LIMIT 1;";
+		$result = $this->db->select($sql, ['account' => $account]);
 
-        $data = $sth->fetch(PDO::FETCH_ASSOC);
-        $count = $sth->rowCount();
-        $user_info = array();
-        if ($count > 0) {
-            print_r(INPUT_POST['password']);
-            if (password_verify(filter_input(INPUT_POST, 'password'), $data['password'])) {
-                $user_info = array(
-                    'user_id' => $data['id'],
-                    'user_account' => $data['account'],
-                    'user_name' => $data['name'],
-                    'user_auth' => $data['auth'],
-                );
-                return $user_info;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
+		$user = $result[0] ?? null;
 
-    public function createUser($account, $name, $password)
-    {
-        $user_data['account'] = $account;
-        $user_data['name'] = $name;
-        $user_data['password'] = password_hash($password, PASSWORD_DEFAULT);
-        $user_data['created_at'] = date('Y-m-d H:i:s');
-        $result = $this->db->insert('m_users', $user_data);
-        return $result;
-    }
+		// 1. ユーザーが存在し、かつパスワードが一致するか検証
+		if ($user && password_verify($password, $user['password'])) {
+
+			// 2. 【ここに追加】認証成功時のみ、最終ログイン日時を更新
+			$this->db->update(
+				'm_users',
+				['last_login_at' => date('Y-m-d H:i:s')],
+				"id = :id",
+				['id' => $user['id']]
+			);
+
+			// セッション等に格納するユーザー情報を返す
+			return array(
+				'user_id'      => $user['id'],
+				'user_account' => $user['account'],
+				'user_name'    => $user['name'],
+				'user_auth'    => $user['auth'],
+			);
+		}
+
+		// 認証失敗（ユーザー不在、またはパスワード不一致）
+		return false;
+	}
+
+	// public function createUser($account, $name, $password, $auth = 1)
+	// {
+	// 	$user_data = [
+	// 		'account'    => $account,
+	// 		'name'       => $name,
+	// 		// ハッシュ化は必須（ここも完璧です）
+	// 		'password'   => password_hash($password, PASSWORD_DEFAULT),
+	// 		'auth'       => $auth,
+	// 		'created_at' => date('Y-m-d H:i:s')
+	// 	];
+
+	// 	// insertメソッドは array(true, lastInsertId) を返す仕様でしたね
+	// 	return $this->db->insert('m_users', $user_data);
+	// }
 }

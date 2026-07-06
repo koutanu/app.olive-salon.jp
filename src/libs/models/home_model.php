@@ -36,24 +36,26 @@ class Home_Model extends Model
 		return $data;
 	}
 
-	public function getProductsGrossProfitMonthly() //月ごとにgroupした商品の売り上げと原価の合計
+	public function getProductsGrossProfitMonthly()
 	{
 		$sql = "SELECT SUM(t_sales_products.price) AS price, SUM(t_sales_products.cost) AS cost, MAX(created_at) AS created_at ";
 		$sql .= "FROM t_sales ";
 		$sql .= "LEFT JOIN t_sales_products ON t_sales_products.sales_id = t_sales.id ";
-		// $sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
-		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym01', strtotime("-1 year -1 month")) . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym01', strtotime("-1 year -1 month")) . "' ";
+		$sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(t_sales.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}
 
-	public function getProductsGrossProfitYearly() //年間
+	public function getProductsGrossProfitYearly()
 	{
 		$sql = "SELECT SUM(t_sales_products.price) AS price, SUM(t_sales_products.cost) AS cost, MAX(created_at) AS created_at ";
 		$sql .= "FROM t_sales ";
 		$sql .= "LEFT JOIN t_sales_products ON t_sales_products.sales_id = t_sales.id ";
-		// $sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
-		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Y0101') . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Y0101') . "' ";
+		$sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(t_sales.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}
@@ -62,27 +64,30 @@ class Home_Model extends Model
 	{
 		$sql = "SELECT SUM(postage + total_price) AS purchase_price, MAX(created_at) AS created_at ";
 		$sql .= "FROM s_stock_delivery ";
-		$sql .= "GROUP BY DATE_FORMAT(s_stock_delivery.created_at, '%Y%m');";
+		$sql .= "GROUP BY DATE_FORMAT(s_stock_delivery.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(s_stock_delivery.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}
 
-	public function getMenuGrossProfitMonthly() //月ごとにgroupした施術売上の合計
+	public function getMenuGrossProfitMonthly()
 	{
 		$sql = "SELECT SUM(sales) AS gross_profit, MAX(created_at) AS created_at ";
 		$sql .= "FROM t_sales ";
-		// $sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
-		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym01', strtotime("-1 year -1 month")) . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym01', strtotime("-1 year -1 month")) . "' ";
+		$sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(t_sales.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}
 
-	public function getMenuGrossProfitYearly() //年間
+	public function getMenuGrossProfitYearly()
 	{
 		$sql = "SELECT SUM(sales) AS gross_profit, MAX(created_at) AS created_at ";
 		$sql .= "FROM t_sales ";
-		// $sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
-		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Y0101') . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Y0101') . "' ";
+		$sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(t_sales.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}
@@ -91,7 +96,9 @@ class Home_Model extends Model
 	{
 		$sql = "SELECT SUM(products_total_sales) AS gross_profit, MAX(created_at) AS created_at ";
 		$sql .= "FROM t_sales ";
-		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym1', strtotime("-1 year -1 month")) . "'GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym1', strtotime("-1 year -1 month")) . "' ";
+		$sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(t_sales.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}
@@ -109,13 +116,13 @@ class Home_Model extends Model
 		return $data;
 	}
 
-
-
 	public function getAveMenuGrossProfitMonthly()
 	{
 		$sql = "SELECT SUM(sales) AS gross_profit, MAX(created_at) AS created_at ";
 		$sql .= "FROM t_sales ";
-		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') between '" . date('Ym01', strtotime("-1 year -1 month")) . "' and '" . date('Ymd') . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') between '" . date('Ym01', strtotime("-1 year -1 month")) . "' and '" . date('Ymd') . "' ";
+		$sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(t_sales.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}
@@ -125,7 +132,9 @@ class Home_Model extends Model
 		$sql = "SELECT SUM(t_sales_products.price) AS price, SUM(t_sales_products.cost) AS cost, MAX(created_at) AS created_at ";
 		$sql .= "FROM t_sales ";
 		$sql .= "LEFT JOIN t_sales_products ON t_sales_products.sales_id = t_sales.id ";
-		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') between '" . date('Ym01', strtotime("-1 year -1 month")) . "' and '" . date('Ymd') . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') between '" . date('Ym01', strtotime("-1 year -1 month")) . "' and '" . date('Ymd') . "' ";
+		$sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(t_sales.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}
@@ -134,7 +143,9 @@ class Home_Model extends Model
 	{
 		$sql = "SELECT SUM(products_total_sales) AS gross_profit, MAX(created_at) AS created_at ";
 		$sql .= "FROM t_sales ";
-		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') between '" . date('Ym01', strtotime("-1 year -1 month")) . "' and '" . date('Ymd') . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+		$sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m%d') between '" . date('Ym01', strtotime("-1 year -1 month")) . "' and '" . date('Ymd') . "' ";
+		$sql .= "GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m') ";
+		$sql .= "ORDER BY DATE_FORMAT(t_sales.created_at, '%Y%m') ASC;";
 		$data = $this->db->select($sql);
 		return $data;
 	}

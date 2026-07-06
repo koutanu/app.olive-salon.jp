@@ -2,7 +2,7 @@
 
 class Home extends Controller
 {
-    private $class_name = 'home';
+    private $class_name = 'Home';
 
     public function __construct()
     {

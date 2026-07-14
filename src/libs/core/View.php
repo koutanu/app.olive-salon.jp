@@ -1,5 +1,6 @@
 <?php
 
+#[\AllowDynamicProperties]
 class View
 {
 	// 全画面共通で使用する基本的な情報のみ保持
@@ -10,12 +11,13 @@ class View
 	public $method;
 	public $title;
 	public $j_class;
-	public $token; // これを追加してください
+	public $token;
 	public $stock;
 	public $grossprofit_graph;
 	public $total_sales;
 	public $menu_graph;
 	public $products_graph;
+	public $purchase_price;
 	public $age_group;
 	public $products_monthly;
 	public $ave_grossprofit;
@@ -94,5 +96,23 @@ class View
 	public function h($string)
 	{
 		return htmlspecialchars($string ?? '', ENT_QUOTES, 'UTF-8');
+	}
+
+	/**
+	 * JSON を HTML 属性値として安全に埋め込む
+	 */
+	public function jsonAttr($data)
+	{
+		if ($data === null || $data === '') {
+			$json = '[]';
+		} elseif (is_string($data)) {
+			$json = $data;
+		} else {
+			$json = json_encode($data, JSON_UNESCAPED_UNICODE);
+			if ($json === false) {
+				$json = '[]';
+			}
+		}
+		return htmlspecialchars($json, ENT_QUOTES, 'UTF-8');
 	}
 }

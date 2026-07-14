@@ -1,4 +1,4 @@
-<input type="hidden" class="tax_rate" value='<?= $this->tax_rate; ?>'>
+<input type="hidden" class="tax_rate" value="<?= $this->jsonAttr($this->tax_rate); ?>">
 <div class="main-section stock-create">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back open"></i>
@@ -15,7 +15,7 @@
                     <p>仕入先</p>
                     <select name="supplier_id" class="supplier_select">
                         <?php foreach ($this->supplier as $value) : ?>
-                            <option value="<?= $value['id']; ?>"><?= $value['name']; ?></option>
+                            <option value="<?= (int)$value['id']; ?>"><?= $this->h($value['name']); ?></option>
                         <?php endforeach; ?>
                     </select>
                     <p>送料</p>

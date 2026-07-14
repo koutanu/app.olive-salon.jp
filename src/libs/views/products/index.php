@@ -1,4 +1,4 @@
-<input type="hidden" id="age_group" value='<?= $this->age_group; ?>'>
+<input type="hidden" id="age_group" value="<?= $this->jsonAttr($this->age_group); ?>">
 <div class="main-section products">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back open"></i>

@@ -15,12 +15,14 @@ class Stock_Model extends Model
 
     public function update($table, $data)
     {
-        return $this->db->update($table, $data, "id = :id");
+        $id = $data['id'] ?? null;
+        return $this->db->update($table, $data, "id = :id", ['id' => $id]);
     }
 
     public function stock_price_update($table, $data)
     {
-        return $this->db->update($table, $data, "products_id = :products_id");
+        $products_id = $data['products_id'] ?? null;
+        return $this->db->update($table, $data, "products_id = :products_id", ['products_id' => $products_id]);
     }
 
     public function saveDetail($sqls, $binds)
@@ -37,20 +39,24 @@ class Stock_Model extends Model
 
     public function getProductsBySupplierId($id)
     {
-        $sql = "SELECT * FROM m_products WHERE supplier_id = " . $id . " ORDER BY id DESC;";
-        $data = $this->db->select($sql);
+        $sql = "SELECT * FROM m_products WHERE supplier_id = :id ORDER BY id DESC;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
         return $data;
     }
 
     public function getStockDetail($data)
     {
-        $sql = "SELECT * FROM t_stock WHERE products_id = " . $data['products_id'] . " && ";
-        $sql .= "price = " . $data['price'] . " && ";
-        $sql .= "cost = " . $data['cost'] . " ";
+        $sql = "SELECT * FROM t_stock WHERE products_id = :products_id AND ";
+        $sql .= "price = :price AND ";
+        $sql .= "cost = :cost ";
         $sql .= "LIMIT 1;";
-        $data = $this->db->select($sql);
-        if (!empty($data)) {
-            return $data[0];
+        $result = $this->db->select($sql, [
+            'products_id' => $data['products_id'],
+            'price' => $data['price'],
+            'cost' => $data['cost'],
+        ]);
+        if (!empty($result)) {
+            return $result[0];
         } else {
             return '';
         }
@@ -59,7 +65,7 @@ class Stock_Model extends Model
     public function deleteStock($id)
     {
         $sql = "DELETE FROM t_stock WHERE id = :id;";
-        $bind = array('id' => $id);
+        $bind = array('id' => (int)$id);
         return $this->db->delete($sql, $bind);
     }
 
@@ -76,8 +82,8 @@ class Stock_Model extends Model
     {
         $sql = "SELECT s_stock.*, m_products.name ";
         $sql .= "FROM s_stock LEFT JOIN m_products ON m_products.id = s_stock.products_id ";
-        $sql .= "WHERE s_stock.products_id = " . $id . " LIMIT 1;";
-        $data = $this->db->select($sql);
+        $sql .= "WHERE s_stock.products_id = :id LIMIT 1;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
         return $data;
     }
 
@@ -86,8 +92,8 @@ class Stock_Model extends Model
         $sql = "SELECT t_stock_products.*, m_products.name, t_stock.delivery_at ";
         $sql .= "FROM t_stock_products LEFT JOIN m_products ON m_products.id = t_stock_products.products_id ";
         $sql .= "LEFT JOIN t_stock ON t_stock.id = t_stock_products.stock_id ";
-        $sql .= "WHERE t_stock_products.products_id = " . $id . " ORDER BY delivery_at DESC;";
-        $data = $this->db->select($sql);
+        $sql .= "WHERE t_stock_products.products_id = :id ORDER BY delivery_at DESC;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
         return $data;
     }
 
@@ -101,10 +107,14 @@ class Stock_Model extends Model
     public function getAlreadyStock($data)
     {
         $sql = "SELECT * FROM s_stock ";
-        $sql .= "WHERE products_id = " . $data['products_id'] . " AND ";
-        $sql .= "cost = " . $data['cost'] . " AND ";
-        $sql .= "postage_cost = " . $data['postage_cost'] . ";";
-        $data = $this->db->select($sql);
-        return $data;
+        $sql .= "WHERE products_id = :products_id AND ";
+        $sql .= "cost = :cost AND ";
+        $sql .= "postage_cost = :postage_cost;";
+        $result = $this->db->select($sql, [
+            'products_id' => $data['products_id'],
+            'cost' => $data['cost'],
+            'postage_cost' => $data['postage_cost'],
+        ]);
+        return $result;
     }
 }

@@ -8,6 +8,7 @@ class Stock extends Controller
     {
         parent::__construct();
         Auth::handleLogin();
+        Auth::requireAdmin();
     }
 
     function index()
@@ -177,9 +178,19 @@ class Stock extends Controller
 
     function get_products_for_supplier()
     {
+        $result = array();
+        $token = filter_input(INPUT_POST, 'token');
+        $method = filter_input(INPUT_POST, 'method');
+        if (!Session::checkToken($this->class_name . '/' . $method, $token)) {
+            echo json_encode(['result' => 'トークンエラーです。ページを再読み込みしてください。'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
         $id = filter_input(INPUT_POST, 'id');
         $data = $this->model->getProductsBySupplierId($id);
-        echo json_encode($data);
+        echo json_encode([
+            'data' => $data,
+            'token' => Session::setToken($this->class_name . '/' . $method),
+        ], JSON_UNESCAPED_UNICODE);
     }
 
     function getTaxRate()
@@ -190,15 +201,24 @@ class Stock extends Controller
 
     function save_stock_price()
     {
+        $result = array();
+        $token = filter_input(INPUT_POST, 'token');
+        $method = filter_input(INPUT_POST, 'method');
+        if (!Session::checkToken($this->class_name . '/' . $method, $token)) {
+            $result['result'] = 'トークンエラーです。ページを再読み込みしてください。';
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
         $data['price'] = intval(filter_input(INPUT_POST, 'price'));
         $data['products_id'] = intval(filter_input(INPUT_POST, 'products_id'));
-        $result = $this->model->stock_price_update('s_stock', $data);
-        if ($result[0] == true) {
+        $dbResult = $this->model->stock_price_update('s_stock', $data);
+        if ($dbResult[0] == true) {
             $result['result'] = "success";
+            $result['token'] = Session::setToken($this->class_name . '/' . $method);
             $this->tasklog->record(0, 'success', $this->class_name, __FUNCTION__);
             echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         } else {
-            $result['result'] = "登録に失敗したよ！";
+            $result['result'] = "登録に失敗しました。";
             $this->tasklog->record(1, '基本売値登録失敗', $this->class_name, __FUNCTION__);
             echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }

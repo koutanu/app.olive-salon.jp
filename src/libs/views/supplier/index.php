@@ -17,7 +17,7 @@
         </div>
         <div class="main-bottom">
             <?php foreach ($this->supplier as $value) : ?>
-                <button type="button" class="btn btn-add"><?= $value['name']; ?></button>
+                <button type="button" class="btn btn-add"><?= $this->h($value['name']); ?></button>
             <?php endforeach; ?>
         </div>
     </div>

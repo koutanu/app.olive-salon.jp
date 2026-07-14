@@ -8,6 +8,7 @@ class Supplier extends Controller
     {
         parent::__construct();
         Auth::handleLogin();
+        Auth::requireAdmin();
     }
 
     function index()

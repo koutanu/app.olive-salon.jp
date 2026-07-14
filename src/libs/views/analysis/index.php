@@ -1,12 +1,12 @@
-<input type="hidden" id="all_reservation_graph_data" value='<?= $this->all_reservation_graph; ?>'>
-<input type="hidden" id="new_reservation_graph_data" value='<?= $this->new_reservation_graph; ?>'>
-<input type="hidden" id="existing_reservation_graph_data" value='<?= $this->existing_reservation_graph; ?>'>
-<input type="hidden" id="all_visitors_graph_data" value='<?= $this->all_visitors_graph; ?>'>
-<input type="hidden" id="new_visitors_graph_data" value='<?= $this->new_visitors_graph; ?>'>
-<input type="hidden" id="existing_visitors_graph_data" value='<?= $this->existing_visitors_graph; ?>'>
-<input type="hidden" id="advertisement_graph_data" value='<?= $this->advertisement_graph; ?>'>
-<input type="hidden" id="total_sales_data" value='<?= $this->total_sales_graph; ?>'>
-<input type="hidden" id="total_grossprofit_data" value='<?= $this->total_grossprofit_graph; ?>'>
+<input type="hidden" id="all_reservation_graph_data" value="<?= $this->jsonAttr($this->all_reservation_graph); ?>">
+<input type="hidden" id="new_reservation_graph_data" value="<?= $this->jsonAttr($this->new_reservation_graph); ?>">
+<input type="hidden" id="existing_reservation_graph_data" value="<?= $this->jsonAttr($this->existing_reservation_graph); ?>">
+<input type="hidden" id="all_visitors_graph_data" value="<?= $this->jsonAttr($this->all_visitors_graph); ?>">
+<input type="hidden" id="new_visitors_graph_data" value="<?= $this->jsonAttr($this->new_visitors_graph); ?>">
+<input type="hidden" id="existing_visitors_graph_data" value="<?= $this->jsonAttr($this->existing_visitors_graph); ?>">
+<input type="hidden" id="advertisement_graph_data" value="<?= $this->jsonAttr($this->advertisement_graph); ?>">
+<input type="hidden" id="total_sales_data" value="<?= $this->jsonAttr($this->total_sales_graph); ?>">
+<input type="hidden" id="total_grossprofit_data" value="<?= $this->jsonAttr($this->total_grossprofit_graph); ?>">
 <div class="main-section analysis">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back"></i>

@@ -24,21 +24,21 @@
                     <img src="<?= URL . 'images/'; ?><?= (!empty($this->products['image1_link'])) ? 'products/' . $this->products['image1_link'] : 'base/image_not_found.webp'; ?>" class="products-image">
                 </div>
                 <input type="file" name="image" id="image" accept="image/png, image/jpeg">
-                <input type="hidden" name="image1_link" value="<?= $this->products['image1_link'] ?>">
+                <input type="hidden" name="image1_link" value="<?= $this->h($this->products['image1_link']); ?>">
                 <p>仕入先</p>
                 <select name="supplier_id">
                     <?php foreach ($this->supplier as $value) : ?>
-                        <option value="<?= $value['id'] ?>" <?= ($this->products['supplier_id'] == $value['id']) ? 'selected' : ''; ?>><?= $value['name']; ?></option>
+                        <option value="<?= (int)$value['id'] ?>" <?= ($this->products['supplier_id'] == $value['id']) ? 'selected' : ''; ?>><?= $this->h($value['name']); ?></option>
                     <?php endforeach; ?>
                 </select>
                 <p>商品名</p>
-                <input type="text" name="name" size="50" value="<?= $this->products['name']; ?>">
+                <input type="text" name="name" size="50" value="<?= $this->h($this->products['name']); ?>">
                 <p>フリガナ</p>
-                <input type="text" name="kana" size="50" value="<?= $this->products['kana']; ?>">
+                <input type="text" name="kana" size="50" value="<?= $this->h($this->products['kana']); ?>">
                 <p>入り数</p>
-                <input type="text" name="unit" size="10" value="<?= $this->products['unit']; ?>">
+                <input type="text" name="unit" size="10" value="<?= $this->h($this->products['unit']); ?>">
                 <p>仕入値</p>
-                <input type="text" name="price" size="10" value="<?= $this->products['price']; ?>">
+                <input type="text" name="price" size="10" value="<?= $this->h($this->products['price']); ?>">
                 <p>販売税率</p>
                 <select name="tax_id">
                     <?php foreach ($this->tax as $tax) : ?>
@@ -47,7 +47,7 @@
                 </select><br>
                 <input type="date" name="updated_at" value="<?= date('Y-m-d'); ?>" style="margin-top:5px;">
                 <button type="button" class="btn btn-add save">更新する</button>
-                <input type="hidden" name="id" id="id" value="<?= $this->products['id']; ?>">
+                <input type="hidden" name="id" id="id" value="<?= $this->h($this->products['id']); ?>">
                 <input type="hidden" name="save_flag" value="update">
             </form>
         </div>

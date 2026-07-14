@@ -15,14 +15,15 @@ class Sales_Model extends Model
 
     public function update($table, $data)
     {
-        return $this->db->update($table, $data, "id = :id");
+        $id = $data['id'] ?? null;
+        return $this->db->update($table, $data, "id = :id", ['id' => $id]);
     }
 
     public function getCustomerById($id)
     {
-        $sql = "SELECT * FROM m_customer WHERE id = " . $id . ";";
-        $data = $this->db->select($sql);
-        return $data[0];
+        $sql = "SELECT * FROM m_customer WHERE id = :id;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
+        return $data[0] ?? null;
     }
 
     public function getMenuListAll()
@@ -44,23 +45,23 @@ class Sales_Model extends Model
         $sql = "SELECT t_sales.*, m_customer.name ";
         $sql .= "FROM t_sales ";
         $sql .= "LEFT JOIN m_customer ON m_customer.id = t_sales.customer_id ";
-        $sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m') = '" . $date . "' ";
+        $sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m') = :date ";
         $sql .= "ORDER BY t_sales.created_at DESC;";
-        $data = $this->db->select($sql);
+        $data = $this->db->select($sql, ['date' => $date]);
         return $data;
     }
 
     public function getSalesById($id)
     {
-        $sql = "SELECT * FROM t_sales WHERE customer_id = " . $id . " ORDER BY created_at DESC;";
-        $data = $this->db->select($sql);
+        $sql = "SELECT * FROM t_sales WHERE customer_id = :id ORDER BY created_at DESC;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
         return $data;
     }
 
     public function getSalesLastByIdNotCancel($id)
     {
-        $sql = "SELECT * FROM t_sales WHERE customer_id = " . $id . " ORDER BY created_at DESC LIMIT 1;";
-        $data = $this->db->select($sql);
+        $sql = "SELECT * FROM t_sales WHERE customer_id = :id ORDER BY created_at DESC LIMIT 1;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
         if (!empty($data)) {
             return $data[0];
         }
@@ -111,37 +112,40 @@ class Sales_Model extends Model
         $sql .= "LEFT JOIN m_customer ON t_sales.customer_id = m_customer.id ";
         $sql .= "LEFT JOIN t_sales_products ON t_sales.id = t_sales_products.sales_id ";
         $sql .= "LEFT JOIN m_menu ON t_sales.menu_id = m_menu.id ";
-        $sql .= "WHERE t_sales.id = " . $id . " LIMIT 1;";
-        $data = $this->db->select($sql);
-        return $data[0];
+        $sql .= "WHERE t_sales.id = :id LIMIT 1;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
+        return $data[0] ?? null;
     }
 
     public function getGrossProfitMonthlyById($id)
     {
+        $from = date('Ym01', strtotime("-1 year"));
         $sql = "SELECT SUM(sales + products_total_sales) AS gross_profit, MAX(created_at) AS created_at ";
-        $sql .= "FROM t_sales WHERE customer_id = " . $id . " ";
-        $sql .= "AND DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym01', strtotime("-1 year")) . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
-        $data = $this->db->select($sql);
+        $sql .= "FROM t_sales WHERE customer_id = :id ";
+        $sql .= "AND DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= :from_date GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+        $data = $this->db->select($sql, ['id' => (int)$id, 'from_date' => $from]);
         return $data;
     }
 
     public function getMenuGrossProfitMonthlyById($id)
     {
+        $from = date('Ym01', strtotime("-1 year"));
         $sql = "SELECT SUM(sales) AS gross_profit, MAX(created_at) AS created_at ";
-        $sql .= "FROM t_sales WHERE customer_id = " . $id . " ";
-        $sql .= "AND DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym01', strtotime("-1 year")) . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
-        $data = $this->db->select($sql);
+        $sql .= "FROM t_sales WHERE customer_id = :id ";
+        $sql .= "AND DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= :from_date GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+        $data = $this->db->select($sql, ['id' => (int)$id, 'from_date' => $from]);
         return $data;
     }
 
     public function getProductsGrossProfitMonthlyById($id)
     {
+        $from = date('Ym01', strtotime("-1 year"));
         $sql = "SELECT SUM(t_sales_products.price) AS gross_profit, SUM(t_sales_products.cost) AS cost, MAX(created_at) AS created_at ";
         $sql .= "FROM t_sales ";
         $sql .= "LEFT JOIN t_sales_products ON t_sales_products.sales_id = t_sales.id ";
-        $sql .= "WHERE customer_id = " . $id . " ";
-        $sql .= "AND DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= '" . date('Ym01', strtotime("-1 year")) . "' GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
-        $data = $this->db->select($sql);
+        $sql .= "WHERE customer_id = :id ";
+        $sql .= "AND DATE_FORMAT(t_sales.created_at, '%Y%m%d') >= :from_date GROUP BY DATE_FORMAT(t_sales.created_at, '%Y%m');";
+        $data = $this->db->select($sql, ['id' => (int)$id, 'from_date' => $from]);
         return $data;
     }
 
@@ -152,15 +156,15 @@ class Sales_Model extends Model
         $sql .= "LEFT JOIN s_stock ON s_stock.id = t_sales_products.stock_id ";
         $sql .= "LEFT JOIN m_products ON m_products.id = s_stock.products_id ";
         $sql .= "LEFT JOIN m_tax ON m_tax.id = s_stock.tax_id ";
-        $sql .= "WHERE sales_id = " . $id . ";";
-        $data = $this->db->select($sql);
+        $sql .= "WHERE sales_id = :id;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
         return $data;
     }
 
     public function deleteSales($id)
     {
         $sql = "DELETE FROM t_sales WHERE id = :id;";
-        $bind = array('id' => $id);
+        $bind = array('id' => (int)$id);
         return $this->db->delete($sql, $bind);
     }
 
@@ -176,16 +180,16 @@ class Sales_Model extends Model
 
     public function getStockLotById($id)
     {
-        $sql = "SELECT * FROM s_stock WHERE NOT lot <= 0 AND products_id = " . $id . " ORDER BY delivery_at DESC LIMIT 1;";
-        $data = $this->db->select($sql);
-        return $data[0];
+        $sql = "SELECT * FROM s_stock WHERE NOT lot <= 0 AND products_id = :id ORDER BY delivery_at DESC LIMIT 1;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
+        return $data[0] ?? null;
     }
 
     public function getStockUnitById($id)
     {
-        $sql = "SELECT * FROM s_stock WHERE NOT (lot <= 0 AND unit <= 0) AND products_id = " . $id . " ORDER BY unit DESC, delivery_at DESC LIMIT 1;";
-        $data = $this->db->select($sql);
-        return $data[0];
+        $sql = "SELECT * FROM s_stock WHERE NOT (lot <= 0 AND unit <= 0) AND products_id = :id ORDER BY unit DESC, delivery_at DESC LIMIT 1;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
+        return $data[0] ?? null;
     }
 
     public function getTaxRate()
@@ -197,8 +201,8 @@ class Sales_Model extends Model
 
     public function getMenuOptionById($id)
     {
-        $sql = "SELECT * FROM t_sales_menu_option LEFT JOIN m_menu_option ON m_menu_option.id = t_sales_menu_option.menu_option_id WHERE sales_id = " . $id . ";";
-        $data = $this->db->select($sql);
+        $sql = "SELECT * FROM t_sales_menu_option LEFT JOIN m_menu_option ON m_menu_option.id = t_sales_menu_option.menu_option_id WHERE sales_id = :id;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
         return $data;
     }
 
@@ -206,20 +210,21 @@ class Sales_Model extends Model
     {
         $sql = "SELECT SUM(t_sales_products.price - t_sales_products.cost) AS products_grossprofit FROM t_sales ";
         $sql .= "LEFT JOIN t_sales_products ON t_sales_products.sales_id = t_sales.id ";
-        $sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m') = " . $date . ";";
-        $data = $this->db->select($sql);
-        return $data[0];
+        $sql .= "WHERE DATE_FORMAT(t_sales.created_at, '%Y%m') = :date;";
+        $data = $this->db->select($sql, ['date' => $date]);
+        return $data[0] ?? null;
     }
 
     public function getReservationCustomerByDate($date)
     {
+        $today = date('Ymd');
         $sql = "SELECT t_sales.*, m_customer.name ";
         $sql .= "FROM t_sales ";
         $sql .= "LEFT JOIN m_customer ON m_customer.id = t_sales.customer_id ";
-        $sql .= "WHERE DATE_FORMAT(t_sales.next_reservation_date, '%Y%m') = " . $date . " ";
+        $sql .= "WHERE DATE_FORMAT(t_sales.next_reservation_date, '%Y%m') = :date ";
         $sql .= "AND (cancel_flag is Null OR cancel_flag = 0) ";
-        $sql .= "AND DATE_FORMAT(t_sales.next_reservation_date, '%Y%m%d') > " . date('Ymd') . ";";
-        $data = $this->db->select($sql);
+        $sql .= "AND DATE_FORMAT(t_sales.next_reservation_date, '%Y%m%d') > :today;";
+        $data = $this->db->select($sql, ['date' => $date, 'today' => $today]);
         return $data;
     }
 
@@ -228,19 +233,19 @@ class Sales_Model extends Model
         $sql = "SELECT t_sales.*, m_customer.name ";
         $sql .= "FROM t_sales ";
         $sql .= "LEFT JOIN m_customer ON m_customer.id = t_sales.customer_id ";
-        $sql .= "WHERE DATE_FORMAT(t_sales.next_reservation_date, '%Y%m') = " . $date . " ";
+        $sql .= "WHERE DATE_FORMAT(t_sales.next_reservation_date, '%Y%m') = :date ";
         $sql .= "AND cancel_flag = 1;";
-        $data = $this->db->select($sql);
+        $data = $this->db->select($sql, ['date' => $date]);
         return $data;
     }
 
     public function getTodayCustomer()
     {
-        $month = date('m');
+        $today = date('Ymd');
         $sql = "SELECT t_sales.*, m_customer.name FROM m_customer ";
         $sql .= "LEFT JOIN t_sales ON t_sales.customer_id = m_customer.id ";
-        $sql .= "WHERE DATE_FORMAT(next_reservation_date, '%Y%m%d') = " . date('Ymd') . ";";
-        $data = $this->db->select($sql);
+        $sql .= "WHERE DATE_FORMAT(next_reservation_date, '%Y%m%d') = :today;";
+        $data = $this->db->select($sql, ['today' => $today]);
         return $data;
     }
 }

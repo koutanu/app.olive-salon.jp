@@ -1,7 +1,7 @@
 <form action="<?= URL ?>login/createUser" method="post" id="form" class="login-form">
     <div class="p-2">
         <div class="text-red">
-            <?= $this->alert; ?>
+            <?= $this->h($this->alert); ?>
         </div>
         <div class="mt-3">
             <span>アカウント：</span>

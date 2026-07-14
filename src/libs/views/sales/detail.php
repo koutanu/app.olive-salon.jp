@@ -1,5 +1,5 @@
-<input type="hidden" id="id" value="<?= $this->sales['id']; ?>">
-<input type="hidden" id="customer_id" value="<?= $this->sales['customer_id']; ?>">
+<input type="hidden" id="id" value="<?= $this->h($this->sales['id']); ?>">
+<input type="hidden" id="customer_id" value="<?= $this->h($this->sales['customer_id']); ?>">
 <div class="main-section sales-detail">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back open"></i>
@@ -12,7 +12,7 @@
                 <button type="button" class="btn btn-delete delete">削除する</button>
             </div>
             <div>
-                <p><?= $this->sales['customer_name']; ?></p>
+                <p><?= $this->h($this->sales['customer_name']); ?></p>
                 <p>来店日&emsp;：<?= date('Y年m月d日', strtotime($this->sales['created_at'])); ?></p>
                 <?php if ($this->sales['next_reservation_flag'] == 1) : ?>
                     <span>次回予約：</span><input type="date" class="reservation_date" value="<?= date('Y-m-d', strtotime($this->sales['next_reservation_date'])); ?>">
@@ -33,7 +33,7 @@
                         <?php if ($this->menu_option) : ?>
                             <ul>オプション：
                                 <?php foreach ($this->menu_option as $value) : ?>
-                                    <li><?= $value['name'] ?></li>
+                                    <li><?= $this->h($value['name']); ?></li>
                                 <?php endforeach; ?>
                             </ul>
                         <?php else : ?>
@@ -102,7 +102,7 @@
         </div>
         <div class="karte-wrap">
             <p>カルテ</p>
-            <textarea><?= $this->sales['karte']; ?></textarea>
+            <textarea><?= $this->h($this->sales['karte']); ?></textarea>
         </div>
     </div>
 </div>

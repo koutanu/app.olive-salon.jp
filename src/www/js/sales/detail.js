@@ -9,104 +9,57 @@ $('.sales').on('click', function () {
 
 $(function () {
     $('.delete').click(function () {
-        var $c = confirm("削除してもいいの？\n売上商品もあったら一緒に削除するからね？");
-        if ($c === false) {
+        if (!confirm("削除しますか？\n関連する売上商品も削除されます。")) {
             return false;
         }
         var customer_id = $("#customer_id").val();
-        var url = getBaseURL() + 'sales/delete';
-        var data = {
-            "method": $("#method").val(),
-            "token": $("#token").val(),
-            "id": $("#id").val()
-        };
-        $.post({
-            type: 'POST',
-            data: data,
-            url: url
-        }).done((result) => {
-            result = JSON.parse(result);
+        postWithToken(getBaseURL() + 'sales/delete', {
+            id: $("#id").val()
+        }, { $button: $(this) }).done(function (result) {
             if (result['result'] === 'success') {
-                alert('削除完了！(｀･ω･´)');
+                showToast('削除しました。');
                 window.location.href = getBaseURL() + 'sales/index/' + customer_id;
             } else {
-                alert(result['result']);
+                showToast(result['result'] || '削除に失敗しました。', true);
             }
-        }).fail((jqXHR, textStatus, errorThrown) => {
-            alert('Ajax通信に失敗しました。');
-            console.log("jqXHR          : " + jqXHR.status);
-            console.log("textStatus     : " + textStatus);
-            console.log("errorThrown    : " + errorThrown.message);
-        }).always((result) => {
-
         });
     });
-});
-$(function () {
+
     $('.cancel').click(function () {
-        var id = $("#id").val();
-        var flag = $(this).data('flag');
-        var url = getBaseURL() + 'sales/cancel';
-        var data = {
-            "id": id,
-            "flag": flag
-        };
-        $.post({
-            type: 'POST',
-            data: data,
-            url: url
-        }).done((result) => {
-            result = JSON.parse(result);
+        var $btn = $(this);
+        var flag = $btn.data('flag');
+        postWithToken(getBaseURL() + 'sales/cancel', {
+            id: $("#id").val(),
+            flag: flag
+        }, { $button: $btn }).done(function (result) {
             if (result[0] === true) {
                 if (flag == 1) {
-                    $(this).data('flag', 0);
-                    $(this).text('キャンセル');
+                    $btn.data('flag', 0);
+                    $btn.text('キャンセル');
                 } else {
-                    $(this).data('flag', 1);
-                    $(this).text('キャンセルを取り消す');
+                    $btn.data('flag', 1);
+                    $btn.text('キャンセルを取り消す');
                 }
+                showToast('更新しました。');
             } else {
-                alert(result['result']);
+                showToast(result['result'] || '更新に失敗しました。', true);
             }
-        }).fail((jqXHR, textStatus, errorThrown) => {
-            alert('Ajax通信に失敗しました。');
-            console.log("jqXHR          : " + jqXHR.status);
-            console.log("textStatus     : " + textStatus);
-            console.log("errorThrown    : " + errorThrown.message);
-        }).always((result) => {
-
         });
     });
-});
 
-$('.change_reservation').on('click', function () {
-    var $c = confirm("予約日付を変更しますか？");
-    if ($c === false) {
-        return false;
-    }
-    var id = $("#id").val();
-    var url = getBaseURL() + 'sales/change_reservation';
-    var data = {
-        "id": id,
-        "reservation_date": $('.reservation_date').val()
-    };
-    $.post({
-        type: 'POST',
-        data: data,
-        url: url
-    }).done((result) => {
-        result = JSON.parse(result);
-        if (result[0] === true) {
-            alert('変更しました。');
-        } else {
-            alert(result['result']);
+    $('.change_reservation').on('click', function () {
+        if (!confirm("予約日付を変更しますか？")) {
+            return false;
         }
-    }).fail((jqXHR, textStatus, errorThrown) => {
-        alert('Ajax通信に失敗しました。');
-        console.log("jqXHR          : " + jqXHR.status);
-        console.log("textStatus     : " + textStatus);
-        console.log("errorThrown    : " + errorThrown.message);
-    }).always((result) => {
-
+        postWithToken(getBaseURL() + 'sales/change_reservation', {
+            id: $("#id").val(),
+            reservation_date: $('.reservation_date').val()
+        }, { $button: $(this) }).done(function (result) {
+            if (result[0] === true) {
+                showToast('変更しました。');
+            } else {
+                showToast(result['result'] || '変更に失敗しました。', true);
+            }
+        });
     });
 });

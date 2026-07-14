@@ -78,38 +78,29 @@ $(function () {
 });
 
 function getSupplierData() {
-    supplier_data.length = 0;//配列を空に
+    supplier_data.length = 0;
     let supplier_id = $('.supplier_select').val();
     let url = getBaseURL() + 'stock/get_products_for_supplier';
-    let data = {
-        "id": supplier_id
-    };
-    $.post({
-        type: 'POST',
-        data: data,
-        url: url
-    }).done((result) => {
-        result = JSON.parse(result);
-        if (result !== '') {
-            supplier_data.push(result);
+    postWithToken(url, { id: supplier_id }).done(function (result) {
+        var list = result.data || result;
+        if (list && list.length !== undefined) {
+            supplier_data.push(list);
             setProductsData();
         } else {
-            alert('仕入先データが取得できないよ～\nなんで？');
+            showToast(result.result || '仕入先データを取得できませんでした。', true);
         }
-    }).fail((jqXHR, textStatus, errorThrown) => {
-        alert('Ajax通信に失敗しました。');
-        console.log("jqXHR          : " + jqXHR.status);
-        console.log("textStatus     : " + textStatus);
-        console.log("errorThrown    : " + errorThrown.message);
-    }).always((result) => {
+    }).always(function () {
         before_supplier_select = supplier_id;
     });
 };
 
 function setProductsData() {
     let html = '';
-    supplier_data[0].map(function (val, i) {
-        html += '<div><button type="button" id="select_products' + val['id'] + '" class="btn btn-add select-products" data-id="' + val['id'] + '" data-key="' + i + '" data-price="' + val['price'] + '">' + val['name'] + '</button></div>';
+    (supplier_data[0] || []).map(function (val, i) {
+        html += '<div><button type="button" id="select_products' + escapeHtml(val['id']) +
+            '" class="btn btn-add select-products" data-id="' + escapeHtml(val['id']) +
+            '" data-key="' + i + '" data-price="' + escapeHtml(val['price']) + '">' +
+            escapeHtml(val['name']) + '</button></div>';
     });
     $('.products-wrap').html(html);
 }

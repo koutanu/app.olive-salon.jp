@@ -67,9 +67,9 @@ foreach ($this->sales as $data) {
     $other_reservation_discount += $data['other_discount'];
 }
 ?>
-<input type="hidden" id="grossprofit_graph_data" value='<?= $this->grossprofit_graph; ?>'>
-<input type="hidden" id="menu_graph_data" value='<?= $this->menu_graph; ?>'>
-<input type="hidden" id="products_graph_data" value='<?= $this->products_graph; ?>'>
+<input type="hidden" id="grossprofit_graph_data" value="<?= $this->jsonAttr($this->grossprofit_graph); ?>">
+<input type="hidden" id="menu_graph_data" value="<?= $this->jsonAttr($this->menu_graph); ?>">
+<input type="hidden" id="products_graph_data" value="<?= $this->jsonAttr($this->products_graph); ?>">
 <div class="main-section calendar">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back"></i>
@@ -148,8 +148,8 @@ foreach ($this->sales as $data) {
                                     <?php if ($value['day'] == date('d')) : ?>
                                         <?php foreach ($this->today_customer as $customer) : ?>
                                             <?php if ($customer['cancel_flag'] != 1 && !in_array($customer['customer_id'], $i)) : ?>
-                                                <button type="button" class="btn btn-add select_sales" style="opacity:0.5;" data-id="<?= $customer['id'] ?>">
-                                                    <?= $customer['name'] ?>
+                                                <button type="button" class="btn btn-add select_sales" style="opacity:0.5;" data-id="<?= (int)$customer['id'] ?>">
+                                                    <?= $this->h($customer['name']); ?>
                                                 </button>
                                             <?php endif; ?>
                                         <?php endforeach; ?>

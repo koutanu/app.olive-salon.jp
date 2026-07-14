@@ -8,6 +8,7 @@ class Products extends Controller
     {
         parent::__construct();
         Auth::handleLogin();
+        Auth::requireAdmin();
     }
 
     function index()
@@ -186,11 +187,19 @@ class Products extends Controller
 
     function imageDelete($data)
     {
-        if (file_exists(DOC_ROOT . 'images/products/' . $data)) {
-            $url = DOC_ROOT . 'images/products/' . $data;
-            return @unlink($url);
-        } else {
+        $filename = basename((string)$data);
+        if ($filename === '' || $filename === '.' || $filename === '..') {
             return true;
         }
+        $path = DOC_ROOT . 'images/products/' . $filename;
+        $realBase = realpath(DOC_ROOT . 'images/products');
+        $realFile = realpath($path);
+        if ($realBase === false) {
+            return true;
+        }
+        if ($realFile !== false && strpos($realFile, $realBase) === 0 && is_file($realFile)) {
+            return @unlink($realFile);
+        }
+        return true;
     }
 }

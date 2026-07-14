@@ -1,6 +1,6 @@
-<input type="hidden" id="customer_geo" value='<?= $this->customer_geo; ?>'>
-<input type="hidden" id="customer_geo_recently" value='<?= $this->customer_geo_recently; ?>'>
-<input type="hidden" id="api" value="<?= MAP_API; ?>">
+<input type="hidden" id="customer_geo" value="<?= $this->jsonAttr($this->customer_geo); ?>">
+<input type="hidden" id="customer_geo_recently" value="<?= $this->jsonAttr($this->customer_geo_recently); ?>">
+<input type="hidden" id="api" value="<?= $this->h(MAP_API); ?>">
 <div class="main-section map">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back open"></i>

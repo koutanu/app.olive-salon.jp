@@ -206,7 +206,19 @@ $(function () {
 });
 $(function () {
     const purchasePrice = document.getElementById('purchase_price_graph');
-    let prices = JSON.parse($('#purchase_price').val());
+    if (!purchasePrice) {
+        return;
+    }
+    var raw = $('#purchase_price').val();
+    var prices = [];
+    try {
+        prices = raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        prices = [];
+    }
+    if (!Array.isArray(prices) || !prices.length) {
+        return;
+    }
     let label = prices.map(function (price) {
         return setDateFormatMonth(price.created_at);
     });
@@ -258,7 +270,16 @@ $(document).on('click', '.select_stock', function () {
 });
 $(window).on('load', function () {
     let container = $('.products-group');
-    let products_monthly = JSON.parse($('#products_monthly').val());
+    var raw = $('#products_monthly').val();
+    var products_monthly = [];
+    try {
+        products_monthly = raw ? JSON.parse(raw) : [];
+    } catch (e) {
+        products_monthly = [];
+    }
+    if (!Array.isArray(products_monthly)) {
+        products_monthly = [];
+    }
     let html = '';
     html += '<div>';
     html += '<span class="products-group-name">商品名</span>';
@@ -268,10 +289,11 @@ $(window).on('load', function () {
     html += '</div>';
     products_monthly.forEach(function (value) {
         html += '<div>';
-        if (value.name.length > 20) {
-            html += '<span class="products-group-name">' + value.name.substring(0, 20) + '...</span>';
+        var name = value.name || '';
+        if (name.length > 20) {
+            html += '<span class="products-group-name">' + escapeHtml(name.substring(0, 20)) + '...</span>';
         } else {
-            html += '<span class="products-group-name">' + value.name + '</span>';
+            html += '<span class="products-group-name">' + escapeHtml(name) + '</span>';
         }
         html += '<span class="products-group-price">' + Math.floor(value.price * (1 + (0.01 * value.tax_rate))).toLocaleString() + '</span>';
         html += '<span class="products-group-lot">' + ((value.lot == null) ? '0' : value.lot) + 'セット ' + '</span>';
@@ -283,17 +305,13 @@ $(window).on('load', function () {
 });
 $('.products_date').on('change', function () {
     var url = getBaseURL() + 'home/get_products_count_monthly';
-    var data = {
-        "date": $('.products_date').val()
-    };
-    $.post({
-        type: 'POST',
-        data: data,
-        url: url
-    }).done((result) => {
-        result = JSON.parse(result);
+    postWithToken(url, {
+        date: $('.products_date').val(),
+        method: 'index'
+    }).done(function (result) {
         let container = $('.products-group');
-        if (result.length) {
+        var rows = result.data || result;
+        if (rows && rows.length) {
             let html = '';
             html += '<div>';
             html += '<span class="products-group-name">商品名</span>';
@@ -301,12 +319,13 @@ $('.products_date').on('change', function () {
             html += '<span class="products-group-lot">販売個数</span>';
             html += '<span class="products-group-unit">(バラ)</span>';
             html += '</div>';
-            result.forEach(function (value) {
+            rows.forEach(function (value) {
                 html += '<div>';
-                if (value.name.length > 20) {
-                    html += '<span class="products-group-name">' + value.name.substring(0, 20) + '...</span>';
+                var name = value.name || '';
+                if (name.length > 20) {
+                    html += '<span class="products-group-name">' + escapeHtml(name.substring(0, 20)) + '...</span>';
                 } else {
-                    html += '<span class="products-group-name">' + value.name + '</span>';
+                    html += '<span class="products-group-name">' + escapeHtml(name) + '</span>';
                 }
                 html += '<span class="products-group-price">' + Math.floor(value.price * (1 + (0.01 * value.tax_rate))).toLocaleString() + '</span>';
                 html += '<span class="products-group-lot">' + ((value.lot == null) ? '0' : value.lot) + 'セット ' + '</span>';
@@ -316,14 +335,7 @@ $('.products_date').on('change', function () {
             $('.products-group').css('height', container.height());
             $('.prodcuts_item_wrap').html(html);
         } else {
-            alert('取得エラー');
+            showToast(result.result || 'データがありません。', true);
         }
-    }).fail((jqXHR, textStatus, errorThrown) => {
-        alert('Ajax通信に失敗しました。');
-        console.log("jqXHR          : " + jqXHR.status);
-        console.log("textStatus     : " + textStatus);
-        console.log("errorThrown    : " + errorThrown.message);
-    }).always((result) => {
-
     });
 });

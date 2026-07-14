@@ -1,6 +1,6 @@
-<input type="hidden" id="grossprofit_graph_data" value='<?= $this->grossprofit_graph; ?>'>
-<input type="hidden" id="menu_graph_data" value='<?= $this->menu_graph; ?>'>
-<input type="hidden" id="products_graph_data" value='<?= $this->products_graph; ?>'>
+<input type="hidden" id="grossprofit_graph_data" value="<?= $this->jsonAttr($this->grossprofit_graph); ?>">
+<input type="hidden" id="menu_graph_data" value="<?= $this->jsonAttr($this->menu_graph); ?>">
+<input type="hidden" id="products_graph_data" value="<?= $this->jsonAttr($this->products_graph); ?>">
 <div class="main-section sales">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back open"></i>
@@ -14,7 +14,7 @@
                     <button type="button" class="btn btn-add customer_detail">顧客情報</button>
                 </div>
                 <div>
-                    <input type="hidden" id="id" value="<?= $this->customer['id']; ?>">
+                    <input type="hidden" id="id" value="<?= $this->h($this->customer['id']); ?>">
                     <span>名前：<?= $this->customer['name']; ?>/</span>
                     <span>年齢：<?= $this->age; ?>/</span>
                     <span>住所：<?= $this->customer['prefecture'] . $this->customer['city'] . $this->customer['address']; ?></span>

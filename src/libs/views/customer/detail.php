@@ -1,7 +1,8 @@
-<input type="hidden" id="api" value="<?= MAP_API; ?>">
+<input type="hidden" id="api" value="<?= $this->h(MAP_API); ?>">
+<?php require VIEWS . 'customer/_form_helpers.php'; ?>
 <div class="main-section customer-detail">
     <div class="close-wrap">
-        <i class="fas fa-caret-left history_back open"></i>
+        <button type="button" class="history_back open" aria-label="戻る"><i class="fas fa-caret-left" aria-hidden="true"></i></button>
     </div>
     <div class="main-wrapper">
         <div class="main-top">
@@ -20,22 +21,22 @@
                         <h2>基本情報</h2>
                         <div class="d-flex gap-10px">
                             <p>登録日</p>
-                            <input type="date" name="created_at" value="<?= date('Y-m-d', strtotime($this->customer['created_at'])); ?>">
-                            <p>更新日：<?= date('Y/m/d', strtotime($this->customer['updated_at'])); ?></p>
+                            <input type="date" name="created_at" value="<?= !empty($this->customer['created_at']) ? date('Y-m-d', strtotime($this->customer['created_at'])) : ''; ?>">
+                            <p>更新日：<?= !empty($this->customer['updated_at']) ? date('Y/m/d', strtotime($this->customer['updated_at'])) : '—'; ?></p>
                             <div>
                                 <button type="button" class="btn btn-add btn_map bg-orange">Google map</button>
-                                <input type="hidden" class="lat" value="<?= $this->customer['lat'] ?>">
-                                <input type="hidden" class="lng" value="<?= $this->customer['lng'] ?>">
+                                <input type="hidden" class="lat" value="<?= $this->h($this->customer['lat']); ?>">
+                                <input type="hidden" class="lng" value="<?= $this->h($this->customer['lng']); ?>">
                             </div>
                         </div>
                         <div class="name-wrap">
                             <div>
                                 <p>名前</p>
-                                <input type="text" name="name" value="<?= $this->customer['name']; ?>">
+                                <input type="text" name="name" value="<?= $this->h($this->customer['name']); ?>">
                             </div>
                             <div>
                                 <p>フリガナ(全角カタカナ)</p>
-                                <input type="text" name="kana" value="<?= $this->customer['kana']; ?>">
+                                <input type="text" name="kana" value="<?= $this->h($this->customer['kana']); ?>">
                             </div>
                         </div>
                         <div class="d-flex gap-5px">
@@ -55,7 +56,7 @@
                             </div>
                             <div>
                                 <p>年齢</p>
-                                <input type="text" value="<?= $this->age; ?>">
+                                <input type="text" value="<?= $this->h($this->age); ?>">
                             </div>
                             <div>
                                 <p>性別</p>
@@ -67,25 +68,25 @@
                         <div class="address-wrap">
                             <div>
                                 <p>〒</p>
-                                <input type="text" name="post" id="post" value="<?= $this->customer['post']; ?>">
+                                <input type="text" name="post" id="post" value="<?= $this->h($this->customer['post']); ?>">
                             </div>
                             <div>
                                 <p>都道府県</p>
-                                <input type="text" name="prefecture" id="prefecture" value="<?= $this->customer['prefecture']; ?>">
+                                <input type="text" name="prefecture" id="prefecture" value="<?= $this->h($this->customer['prefecture']); ?>">
                             </div>
                             <div>
                                 <p>市町村</p>
-                                <input type="text" name="city" id="city" value="<?= $this->customer['city']; ?>">
+                                <input type="text" name="city" id="city" value="<?= $this->h($this->customer['city']); ?>">
                             </div>
                         </div>
                         <div class="address-wrap">
                             <div>
                                 <p>住所</p>
-                                <input type="text" name="address" id="address" value="<?= $this->customer['address']; ?>" size="40">
+                                <input type="text" name="address" id="address" value="<?= $this->h($this->customer['address']); ?>" size="40">
                             </div>
                             <div>
                                 <p>マンション</p>
-                                <input type="text" name="apartment" id="apartment" value="<?= $this->customer['apartment']; ?>" size="40">
+                                <input type="text" name="apartment" id="apartment" value="<?= $this->h($this->customer['apartment']); ?>" size="40">
                             </div>
                         </div>
                         <div class="d-flex gap-5px">
@@ -97,7 +98,7 @@
                             </div>
                             <div>
                                 <p>子供</p>
-                                <input type="text" name="children" value="<?= $this->customer['children']; ?>" size="40">
+                                <input type="text" name="children" value="<?= $this->h($this->customer['children']); ?>" size="40">
                             </div>
                             <div>
                                 <p>電話番号</p>
@@ -107,11 +108,11 @@
                         <div class="d-flex gap-5px">
                             <div>
                                 <p>仕事</p>
-                                <input type="text" name="work" size="40" value="<?= $this->customer['work']; ?>">
+                                <input type="text" name="work" size="40" value="<?= $this->h($this->customer['work']); ?>">
                             </div>
                             <div>
                                 <p>趣味</p>
-                                <input type="text" name="hobby" size="60" value="<?= $this->customer['hobby']; ?>">
+                                <input type="text" name="hobby" size="60" value="<?= $this->h($this->customer['hobby']); ?>">
                             </div>
                         </div>
                     </div>
@@ -125,11 +126,11 @@
                             <input type="hidden" name="ad_other">
                             <!-- null送信用 -->
                             <input type="checkbox" name="ad1" id="ad1" value="1" <?= ($this->customer['ad1'] == 1) ? 'checked' : '';  ?>><label for="ad1">紹介</label>
-                            <input type="text" name="ad1_text" id="ad1_text" value="<?= $this->customer['ad1_text']; ?>">
+                            <input type="text" name="ad1_text" id="ad1_text" value="<?= $this->h($this->customer['ad1_text']); ?>">
                             <input type="checkbox" name="ad2" id="ad2" value="1" <?= ($this->customer['ad2'] == 1) ? 'checked' : '';  ?>><label for="ad2">HP</label>
                             <input type="checkbox" name="ad3" id="ad3" value="1" <?= ($this->customer['ad3'] == 1) ? 'checked' : '';  ?>><label for="ad3">instagram</label>
                             <input type="checkbox" name="ad_other" id="ad_other" value="1" <?= ($this->customer['ad_other'] == 1) ? 'checked' : '';  ?>><label for="ad_other">その他</label>
-                            <input type="text" name="ad_other_text" id="ad_other_text" value="<?= $this->customer['ad_other_text']; ?>">
+                            <input type="text" name="ad_other_text" id="ad_other_text" value="<?= $this->h($this->customer['ad_other_text']); ?>">
                         </div>
                     </div>
                     <div class="section">
@@ -264,7 +265,7 @@
                                 </div>
                                 <div>
                                     <p>PC作業時間</p>
-                                    <input name="work_style_text" value="<?= $this->customer['work_style_text']; ?>">
+                                    <input name="work_style_text" value="<?= $this->h($this->customer['work_style_text']); ?>">
                                 </div>
                             </div>
                         </div>
@@ -294,7 +295,7 @@
                                 </div>
                                 <div>
                                     <p>その他</p>
-                                    <input type="text" name="sports_other_text" size="40" value="<?= $this->customer['sports_other_text']; ?>">
+                                    <input type="text" name="sports_other_text" size="40" value="<?= $this->h($this->customer['sports_other_text']); ?>">
                                 </div>
                             </div>
                         </div>
@@ -329,7 +330,7 @@
                             </div>
                             <div>
                                 <p>他</p>
-                                <input type="text" name="clinic_other_text" size="40" value="<?= $this->customer['clinic_other_text']; ?>">
+                                <input type="text" name="clinic_other_text" size="40" value="<?= $this->h($this->customer['clinic_other_text']); ?>">
                             </div>
                         </div>
                     </div>
@@ -351,7 +352,7 @@
                             </div>
                             <div>
                                 <p>その他</p>
-                                <input type="text" name="allergy_other_text" value="<?= $this->customer['allergy_other_text']; ?>">
+                                <input type="text" name="allergy_other_text" value="<?= $this->h($this->customer['allergy_other_text']); ?>">
                             </div>
                         </div>
                         <div class="d-flex gap-10px">
@@ -363,11 +364,11 @@
                             </div>
                             <div>
                                 <p>箇所</p>
-                                <input type="text" name="ope_parts" size="30" value="<?= $this->customer['ope_parts']; ?>">
+                                <input type="text" name="ope_parts" size="30" value="<?= $this->h($this->customer['ope_parts']); ?>">
                             </div>
                             <div>
                                 <p>時期</p>
-                                <input type="text" name="surgery_period" size="30" value="<?= $this->customer['surgery_period']; ?>">
+                                <input type="text" name="surgery_period" size="30" value="<?= $this->h($this->customer['surgery_period']); ?>">
                             </div>
                         </div>
                         <div class="d-flex gap-10px">
@@ -379,7 +380,7 @@
                             </div>
                             <div>
                                 <p>薬名</p>
-                                <input type="text" name="medicine_name" size="30" value="<?= $this->customer['medicine_name']; ?>">
+                                <input type="text" name="medicine_name" size="30" value="<?= $this->h($this->customer['medicine_name']); ?>">
                             </div>
                         </div>
                         <div class="d-flex gap-10px">
@@ -391,11 +392,11 @@
                             </div>
                             <div>
                                 <p>箇所</p>
-                                <input type="text" name="injury_parts" size="30" value="<?= $this->customer['injury_parts']; ?>">
+                                <input type="text" name="injury_parts" size="30" value="<?= $this->h($this->customer['injury_parts']); ?>">
                             </div>
                             <div>
                                 <p>時期</p>
-                                <input type="text" name="injury_period" size="30" value="<?= $this->customer['injury_period']; ?>">
+                                <input type="text" name="injury_period" size="30" value="<?= $this->h($this->customer['injury_period']); ?>">
                             </div>
                         </div>
                         <div class="d-flex gap-10px">
@@ -407,11 +408,11 @@
                             </div>
                             <div>
                                 <p>箇所</p>
-                                <input type="text" name="trouble_parts" size="30" value="<?= $this->customer['trouble_parts']; ?>">
+                                <input type="text" name="trouble_parts" size="30" value="<?= $this->h($this->customer['trouble_parts']); ?>">
                             </div>
                             <div>
                                 <p>時期</p>
-                                <input type="text" name="trouble_period" size="30" value="<?= $this->customer['trouble_period']; ?>">
+                                <input type="text" name="trouble_period" size="30" value="<?= $this->h($this->customer['trouble_period']); ?>">
                             </div>
                         </div>
                         <div>
@@ -461,17 +462,17 @@
                             </div>
                             <div>
                                 <p>他</p>
-                                <input type="text" name="request_other_text" size="30" value="<?= $this->customer['request_other_text']; ?>">
+                                <input type="text" name="request_other_text" size="30" value="<?= $this->h($this->customer['request_other_text']); ?>">
                             </div>
                         </div>
                     </div>
                     <div>
                         <h2>その他(ご要望)</h2>
-                        <textarea name="other" class="other-textarea"><?= $this->customer['other']; ?></textarea>
+                        <textarea name="other" class="other-textarea"><?= $this->h($this->customer['other']); ?></textarea>
                     </div>
                 </div>
                 <button type="button" class="btn btn-add save">更新する</button>
-                <input type="hidden" name="id" id="id" value="<?= $this->customer['id']; ?>">
+                <input type="hidden" name="id" id="id" value="<?= $this->h($this->customer['id']); ?>">
                 <input type="hidden" name="save_flag" value="update">
             </form>
         </div>

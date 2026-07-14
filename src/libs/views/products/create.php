@@ -9,7 +9,7 @@
                 <p>仕入先</p>
                 <select name="supplier_id">
                     <?php foreach ($this->supplier as $value) : ?>
-                        <option value="<?= $value['id'] ?>"><?= $value['name']; ?></option>
+                        <option value="<?= (int)$value['id'] ?>"><?= $this->h($value['name']); ?></option>
                     <?php endforeach; ?>
                 </select>
                 <p>商品名</p>

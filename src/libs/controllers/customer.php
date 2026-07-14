@@ -124,15 +124,17 @@ class Customer extends Controller
             }
             if ($detabase_result[0] === true) {
                 $result['result'] = "success";
+                $result['token'] = Session::setToken($this->class_name . '/' . $method);
                 $this->tasklog->record(0, 'success', $this->class_name . '/' . $save_flag, __FUNCTION__);
                 echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
             } else {
-                $result['result'] = "登録に失敗したよ～(´；ω；`)ｳｩｩ";
+                $result['result'] = "登録に失敗しました。";
+                $result['token'] = Session::setToken($this->class_name . '/' . $method);
                 $this->tasklog->record(1, 'データベース登録エラー', $this->class_name . '/' . $save_flag, __FUNCTION__, $detabase_result[1]);
                 echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
             }
         } else {
-            $result['result'] = "登録に失敗したよ！とーくん？が違うみたいだよ。";
+            $result['result'] = "トークンエラーです。ページを再読み込みしてください。";
             $this->tasklog->record(1, 'トークンエラー', $this->class_name, __FUNCTION__);
             echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
@@ -147,17 +149,18 @@ class Customer extends Controller
         if (Session::checkToken($this->class_name . '/' . $method, $token)) {
             $database_result = $this->model->deleteCustomer($id);
             if ($database_result[0] === true) {
-                //不随する全てのデータ削除
                 $result['result'] = "success";
+                $result['token'] = Session::setToken($this->class_name . '/' . $method);
                 $this->tasklog->record(0, 'success', $this->class_name, __FUNCTION__);
                 echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
             } else {
-                $result['result'] = "データベース削除に失敗しちゃった...";
+                $result['result'] = "データベース削除に失敗しました。";
+                $result['token'] = Session::setToken($this->class_name . '/' . $method);
                 $this->tasklog->record(1, 'データベース削除エラー', $this->class_name, __FUNCTION__, $database_result[1]);
                 echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
             }
         } else {
-            $result['result'] = "登録に失敗したよ！とーくん？が違うみたいだよ。";
+            $result['result'] = "トークンエラーです。ページを再読み込みしてください。";
             $this->tasklog->record(1, 'トークンエラー', $this->class_name, __FUNCTION__);
             echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
@@ -170,9 +173,12 @@ class Customer extends Controller
         if (Session::checkToken($this->class_name . '/' . $method, $token)) {
             $name = filter_input(INPUT_POST, 'name');
             $database_result = $this->model->searchCustomerByName($name);
-            echo json_encode($database_result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            echo json_encode([
+                'data' => $database_result,
+                'token' => Session::setToken($this->class_name . '/' . $method),
+            ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         } else {
-            $result['result'] = "登録に失敗したよ！とーくん？が違うみたいだよ。";
+            $result['result'] = "トークンエラーです。ページを再読み込みしてください。";
             $this->tasklog->record(1, 'トークンエラー', $this->class_name, __FUNCTION__);
             echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }
@@ -185,9 +191,12 @@ class Customer extends Controller
         if (Session::checkToken($this->class_name . '/' . $method, $token)) {
             $initial = filter_input(INPUT_POST, 'initial');
             $database_result = $this->model->searchCustomerByInitial($initial);
-            echo json_encode($database_result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            echo json_encode([
+                'data' => $database_result,
+                'token' => Session::setToken($this->class_name . '/' . $method),
+            ], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         } else {
-            $result['result'] = "登録に失敗したよ！とーくん？が違うみたいだよ。";
+            $result['result'] = "トークンエラーです。ページを再読み込みしてください。";
             $this->tasklog->record(1, 'トークンエラー', $this->class_name, __FUNCTION__);
             echo json_encode($result, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
         }

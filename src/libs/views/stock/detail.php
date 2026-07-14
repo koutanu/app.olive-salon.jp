@@ -6,8 +6,8 @@
         <div class="main-top">
             <p><?= $this->stock[0]['name']; ?></p>
             <p>基本売値</p>
-            <input type="text" class="price" value="<?= $this->stock[0]['price']; ?>" inputmode="numeric">
-            <input type="hidden" class="products_id" value="<?= $this->stock[0]['products_id']; ?>">
+            <input type="text" class="price" value="<?= $this->h($this->stock[0]['price']); ?>" inputmode="numeric">
+            <input type="hidden" class="products_id" value="<?= $this->h($this->stock[0]['products_id']); ?>">
             <button type="button" class="btn btn-add save">登録</button>
             <div class="stock-table-wrap">
                 <p>仕入記録</p>

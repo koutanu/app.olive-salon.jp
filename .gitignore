@@ -2,9 +2,15 @@
 .DS_Store
 Thumbs.db
 
+# secrets
+.env
+
 # DB（名前付きボリュームへ移行済み。旧バインドマウントの名残/ダンプを除外）
 src/mysql_data/
 db_dump.sql
 
 # PHPセッション等の一時生成物
 *.log
+
+# one-shot scripts
+_escape_views.php

@@ -1,9 +1,9 @@
-<input type="hidden" id="grossprofit_graph_data" value='<?= $this->grossprofit_graph; ?>'>
-<input type="hidden" id="menu_graph_data" value='<?= $this->menu_graph; ?>'>
-<input type="hidden" id="products_graph_data" value='<?= $this->products_graph; ?>'>
-<input type="hidden" id="purchase_price" value='<?= $this->purchase_price; ?>'>
-<input type="hidden" id="age_group_data" value='<?= $this->age_group; ?>'>
-<input type="hidden" id="products_monthly" value='<?= $this->products_monthly; ?>'>
+<input type="hidden" id="grossprofit_graph_data" value="<?= $this->jsonAttr($this->grossprofit_graph); ?>">
+<input type="hidden" id="menu_graph_data" value="<?= $this->jsonAttr($this->menu_graph); ?>">
+<input type="hidden" id="products_graph_data" value="<?= $this->jsonAttr($this->products_graph); ?>">
+<input type="hidden" id="purchase_price" value="<?= $this->jsonAttr($this->purchase_price); ?>">
+<input type="hidden" id="age_group_data" value="<?= $this->jsonAttr($this->age_group); ?>">
+<input type="hidden" id="products_monthly" value="<?= $this->jsonAttr($this->products_monthly); ?>">
 <div class="main-section home">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back open"></i>

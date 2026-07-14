@@ -15,7 +15,8 @@ class Supplier_Model extends Model
 
     public function update($table, $data)
     {
-        return $this->db->update($table, $data, "id = :id");
+        $id = $data['id'] ?? null;
+        return $this->db->update($table, $data, "id = :id", ['id' => $id]);
     }
 
     public function getSupplierAll()

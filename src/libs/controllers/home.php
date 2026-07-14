@@ -2,7 +2,7 @@
 
 class Home extends Controller
 {
-    private $class_name = 'Home';
+    private $class_name = 'home';
 
     public function __construct()
     {
@@ -21,6 +21,7 @@ class Home extends Controller
         $this->view->total_sales = $this->getTotalSales(); //年間総売り上げ(施術売上 + 商品粗利)
         $this->view->menu_graph = $this->getMenuGrossProfitMonthly(); //施術売上高
         $this->view->products_graph = $this->getProductsSalesMonthly(); //商品売上高
+        $this->view->purchase_price = $this->getPurchasePriceMonthly(); //仕入金額
         $this->view->age_group = $this->getAgeGroup(); //年齢層
         $this->view->products_monthly = $this->getProductsCountMonthly(); //当月商品売上個数
         $this->view->ave_grossprofit = $this->getAveGrossProfit(); // 平均 施術売上高 + 商品売上高
@@ -115,9 +116,22 @@ class Home extends Controller
 
     function get_products_count_monthly()
     {
+        $token = filter_input(INPUT_POST, 'token');
+        $method = filter_input(INPUT_POST, 'method') ?: 'index';
+        if (!Session::checkToken($this->class_name . '/' . $method, $token)) {
+            echo json_encode(['result' => 'トークンエラーです。ページを再読み込みしてください。'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
         $date = str_replace('-', '', filter_input(INPUT_POST, 'date'));
+        if (!preg_match('/^\d{6}$/', $date)) {
+            echo json_encode(['result' => '日付が不正です。'], JSON_UNESCAPED_UNICODE);
+            return;
+        }
         $products = $this->model->getProductsCountMonthly($date);
-        echo json_encode($products);
+        echo json_encode([
+            'data' => $products,
+            'token' => Session::setToken($this->class_name . '/' . $method),
+        ], JSON_UNESCAPED_UNICODE);
     }
 
     //平均

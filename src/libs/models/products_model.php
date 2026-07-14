@@ -15,7 +15,8 @@ class Products_Model extends Model
 
     public function update($table, $data)
     {
-        return $this->db->update($table, $data, "id = :id");
+        $id = $data['id'] ?? null;
+        return $this->db->update($table, $data, "id = :id", ['id' => $id]);
     }
 
     public function getAllProducts()
@@ -27,15 +28,15 @@ class Products_Model extends Model
 
     public function getProductsById($id)
     {
-        $sql = "SELECT * FROM m_products WHERE id = " . $id . ";";
-        $data = $this->db->select($sql);
-        return $data[0];
+        $sql = "SELECT * FROM m_products WHERE id = :id;";
+        $data = $this->db->select($sql, ['id' => (int)$id]);
+        return $data[0] ?? null;
     }
 
     public function deleteProducts($id)
     {
         $sql = "DELETE FROM m_products WHERE id = :id;";
-        $bind = array('id' => $id);
+        $bind = array('id' => (int)$id);
         return $this->db->delete($sql, $bind);
     }
 

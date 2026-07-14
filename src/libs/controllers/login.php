@@ -8,13 +8,16 @@ class Login extends Controller
 	function __construct()
 	{
 		parent::__construct();
+		Session::init();
 	}
 
 	function index()
 	{
+		$token = Session::setToken($this->class_name . '/index');
 		$data = [
 			'js' => [$this->class_name . '/index.js'],
-			'alert' => $this->alert
+			'alert' => $this->alert,
+			'token' => $token,
 		];
 		$this->view->render($this->class_name, 'index', '', $data);
 	}
@@ -32,14 +35,17 @@ class Login extends Controller
 	 */
 	function zikkou()
 	{
-		// --- 追加：IPアドレスを取得 ---
 		$remote_ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 
-		// ハニーポットのチェック
+		$token = filter_input(INPUT_POST, 'token');
+		if (!Session::checkToken($this->class_name . '/index', $token)) {
+			header('location: ' . URL . 'login/error');
+			exit;
+		}
+
 		$hp_email = filter_input(INPUT_POST, 'hp_email');
 
 		if ($hp_email !== '' && $hp_email !== null) {
-			// IPアドレスをログに含める
 			$message = "不正アクセス検知(Honeypot) / IP: {$remote_ip} / Data: {$hp_email}";
 			$this->tasklog->record(2, $message, $this->class_name, __FUNCTION__);
 
@@ -62,10 +68,7 @@ class Login extends Controller
 			header('location: ' . URL . 'home');
 			exit;
 		} else {
-			// --- 修正：ログインエラー時にもIPアドレスを記録 ---
 			$message = "ログインエラー / アカウント: {$login_account} / IP: {$remote_ip}";
-			// セキュリティ上、パスワードをそのままログに残すのは避けたほうが良いため除外を推奨します
-
 			$this->tasklog->record(1, $message, $this->class_name, __FUNCTION__);
 			header('location: ' . URL . 'login/error');
 			exit;
@@ -100,9 +103,11 @@ class Login extends Controller
 
 	function error()
 	{
+		$token = Session::setToken($this->class_name . '/index');
 		$data = [
 			'js' => [$this->class_name . '/index.js'],
-			'alert' => 'ログインできませんでした。'
+			'alert' => 'ログインできませんでした。',
+			'token' => $token,
 		];
 		$this->view->render($this->class_name, 'index', 'Login', $data);
 	}

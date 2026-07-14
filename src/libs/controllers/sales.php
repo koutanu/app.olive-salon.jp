@@ -359,6 +359,14 @@ class Sales extends Controller
 
     function cancel()
     {
+        $result = array();
+        $token = filter_input(INPUT_POST, 'token');
+        $method = filter_input(INPUT_POST, 'method');
+        if (!Session::checkToken($this->class_name . '/' . $method, $token)) {
+            $result['result'] = 'トークンエラーです。ページを再読み込みしてください。';
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
         $data['id'] = filter_input(INPUT_POST, 'id');
         $flag = filter_input(INPUT_POST, 'flag');
         if ($flag == 1) {
@@ -367,6 +375,7 @@ class Sales extends Controller
             $data['cancel_flag'] = 1;
         }
         $result = $this->model->update('t_sales', $data);
+        $result['token'] = Session::setToken($this->class_name . '/' . $method);
         echo json_encode($result);
     }
 
@@ -394,11 +403,20 @@ class Sales extends Controller
 
     function change_reservation()
     {
+        $result = array();
+        $token = filter_input(INPUT_POST, 'token');
+        $method = filter_input(INPUT_POST, 'method');
+        if (!Session::checkToken($this->class_name . '/' . $method, $token)) {
+            $result['result'] = 'トークンエラーです。ページを再読み込みしてください。';
+            echo json_encode($result, JSON_UNESCAPED_UNICODE);
+            return;
+        }
         $data['id'] = filter_input(INPUT_POST, 'id');
         $data['next_reservation_flag'] = 1;
         $data['next_reservation_date'] = filter_input(INPUT_POST, 'reservation_date');
         $data['updated_at'] = date('Y-m-d H:i:s');
         $result = $this->model->update('t_sales', $data);
+        $result['token'] = Session::setToken($this->class_name . '/' . $method);
         echo json_encode($result);
     }
 }

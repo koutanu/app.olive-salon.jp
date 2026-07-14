@@ -1,4 +1,4 @@
-<input type="hidden" class="tax_rate" value='<?= $this->tax_rate; ?>'>
+<input type="hidden" class="tax_rate" value="<?= $this->jsonAttr($this->tax_rate); ?>">
 <div class="main-section sales-create">
     <div class="close-wrap">
         <i class="fas fa-caret-left history_back open"></i>
@@ -12,22 +12,22 @@
                     <button type="button" class="btn btn-add customer_detail">顧客情報</button>
                 </div>
                 <div>
-                    <span>名前：<?= $this->customer['name']; ?>/</span>
-                    <span>年齢：<?= $this->age; ?>/</span>
-                    <span>住所：<?= $this->customer['prefecture'] . $this->customer['city'] . $this->customer['address']; ?></span>
+                    <span>名前：<?= $this->h($this->customer['name']); ?>/</span>
+                    <span>年齢：<?= $this->h($this->age); ?>/</span>
+                    <span>住所：<?= $this->h($this->customer['prefecture'] . $this->customer['city'] . $this->customer['address']); ?></span>
                     <div>
                         <span>来店日：</span>
                         <input type="date" name="created_at" class="created_at" value="<?= date('Y-m-d'); ?>">
                         <p>メニュー</p>
                         <?php foreach ($this->menu_list as $value) : ?>
-                            <button type="button" class="btn btn-add menu-select menu_select" data-price="<?= $value['price'] ?>" data-id="<?= $value['id'] ?>" data-discount="<?= $value['first_time_discount'] ?>"><?= $value['name']; ?></button>
+                            <button type="button" class="btn btn-add menu-select menu_select" data-price="<?= (int)$value['price'] ?>" data-id="<?= (int)$value['id'] ?>" data-discount="<?= (int)$value['first_time_discount'] ?>"><?= $this->h($value['name']); ?></button>
                         <?php endforeach; ?>
                         <p>オプション</p>
                         <div class="menu-option-wrap">
                             <?php foreach ($this->option_list as $key => $value) : ?>
                                 <div>
-                                    <input type="checkbox" name="menu_option[]" class="menu_option" value="<?= $value['id'] ?>" style="display:none;">
-                                    <button type="button" class="btn btn-add option-select option_select" data-price="<?= $value['price'] ?>"><?= $value['name']; ?></button>
+                                    <input type="checkbox" name="menu_option[]" class="menu_option" value="<?= (int)$value['id'] ?>" style="display:none;">
+                                    <button type="button" class="btn btn-add option-select option_select" data-price="<?= (int)$value['price'] ?>"><?= $this->h($value['name']); ?></button>
                                 </div>
                             <?php endforeach; ?>
                         </div>
@@ -39,11 +39,11 @@
                         <div class="d-flex gap-5px" style="margin-top:5px;">
                             <div>
                                 <p>予約割引</p>
-                                <input type="text" name="reservation_discount" class="menu_reservation_discount menu_input" value="<?= $this->reservation_discount; ?>">
+                                <input type="text" name="reservation_discount" class="menu_reservation_discount menu_input" value="<?= $this->h($this->reservation_discount); ?>">
                             </div>
                             <!-- <div>
                                 <p>誕生日割引</p>
-                                <input type="text" name="birthday_discount" class="birthday_discount menu_input" value="<?= $this->birthday_discount; ?>">
+                                <input type="text" name="birthday_discount" class="birthday_discount menu_input" value="<?= $this->h($this->birthday_discount); ?>">
                             </div> -->
                             <div>
                                 <p>割引(その他)</p>
@@ -62,7 +62,7 @@
                             <input type="date" name="next_reservation_date" class="next_reservation_date" value="" disabled>
                             <input type="checkbox" name="paypay_flag" value="1" id="paypay_flag"><label for="paypay_flag">PayPay支払い</label>
                             <button type="button" class="btn btn-add save bg-orange">登録する</button>
-                            <input type="hidden" name="customer_id" id="customer_id" value="<?= $this->customer['id']; ?>">
+                            <input type="hidden" name="customer_id" id="customer_id" value="<?= $this->h($this->customer['id']); ?>">
                         </div>
                     </div>
                 </div>
